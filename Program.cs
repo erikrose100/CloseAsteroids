@@ -55,6 +55,10 @@ class Program
                 Console.WriteLine(output);               
             }
         }
+        else 
+        {
+            Console.WriteLine("No NEO close approaches detected in this time range.");
+        }
 
     }
 }
