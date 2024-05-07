@@ -2,11 +2,6 @@ using System.Runtime.InteropServices;
 
 namespace CloseAsteroids;
 
-public class Signature
-{
-    public string? source { get; set; }
-    public string? version { get; set; }
-}
 public class Asteroid
 {
     public string? AsteroidDesignation { get; set; }
@@ -20,6 +15,12 @@ public class Asteroid
     public float? VInf { get; set; }
     public string? TSigUncertainty { get; set; }
     public float? AbsoluteMagnitude { get; set; }
+}
+
+public class Signature
+{
+    public string? source { get; set; }
+    public string? version { get; set; }
 }
 
 public class CloseApproachDataResponse
