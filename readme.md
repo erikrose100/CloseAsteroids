@@ -22,17 +22,17 @@ Example output:
 dotnet run --date-min 2099-12-30 --date-max 2100-01-01 --dist-max 0.2
 Date: Wednesday, December 30, 2099
         Asteroid: 2019 XB
-        Time: 23:02:00:000
+        Time: 23:02
         Distance: 0.084024385
 
 Date: Thursday, December 31, 2099
         Asteroid: 2017 WS12
-        Time: 05:03:00:000
+        Time: 05:03
         Distance: 0.14148647
 
 Date: Thursday, December 31, 2099
         Asteroid: 2010 XB24
-        Time: 21:00:00:000
+        Time: 21:00
         Distance: 0.1261884
 ```
 
