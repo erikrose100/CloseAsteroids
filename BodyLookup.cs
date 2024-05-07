@@ -4,14 +4,14 @@ public static class BodyLookup
 {
     public static readonly Dictionary<string, string> BodyDict = new()
         {
-            { "Merc", "Mercury" },
+            { "Mercury", "Merc" },
             { "Venus", "Venus" },
             { "Earth", "Earth" },
             { "Mars", "Mars" },
-            { "Juptr", "Jupiter" },
-            { "Satrn", "Saturn" },
-            { "Urnus", "Uranus" },
-            { "Neptn", "Neptune" },
+            { "Jupiter", "Juptr" },
+            { "Saturn", "Satrn" },
+            { "Uranus", "Urnus" },
+            { "Neptune", "Neptn" },
             { "Pluto", "Pluto" },
             { "Moon", "Moon" }
         };

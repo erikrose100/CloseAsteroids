@@ -46,7 +46,8 @@ class Program
         {
             var dateMinString = dateMin.ToString("yyyy-MM-dd");
             var dateMaxString = dateMax.ToString("yyyy-MM-dd");
-            var response = await sharedClient.GetAsync($"?date-min={dateMinString}&date-max={dateMaxString}&dist-max={distMax}&body={body}");
+            var bodyString = BodyLookup.BodyDict[body];
+            var response = await sharedClient.GetAsync($"?date-min={dateMinString}&date-max={dateMaxString}&dist-max={distMax}&body={bodyString}");
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
             var json = JsonSerializer.Deserialize<CloseApproachDataResponse>(jsonResponse);
@@ -71,7 +72,7 @@ class Program
                 foreach (Asteroid asteroid in asteroids)
                 {
                     var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
-                    var bodyOutput = body != "Earth" ? output + string.Format("Body: {0}\n\t", BodyLookup.BodyDict[body]) : output;
+                    var bodyOutput = body != "Earth" ? output + string.Format("Body: {0}\n\t", body) : output;
                     Console.WriteLine(bodyOutput);
                 }
             }
@@ -83,7 +84,7 @@ class Program
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("No asteroid close approaches for {0} detected in this time range.", BodyLookup.BodyDict[body]));
+                    Console.WriteLine(string.Format("No asteroid close approaches for {0} detected in this time range.", body));
                 }
             }
         },
