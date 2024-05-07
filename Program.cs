@@ -11,13 +11,6 @@ class Program
         BaseAddress = new Uri($"https://ssd-api.jpl.nasa.gov/cad.api"),
     };
 
-    // public List<Asteroid> GetAsteroids(List<List<string>> list)
-    // {
-    //     return new List<Asteroid>
-    //     {
-
-    //     };
-    // }
     static async Task Main(string[] args)
     {
         //1900-01-01
