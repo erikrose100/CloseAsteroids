@@ -83,7 +83,7 @@ class Program
                 }
                 else
                 {
-                    Console.WriteLine(string.Format("No asteroid close approaches for detected in this time range.", BodyLookup.BodyDict[body]));
+                    Console.WriteLine(string.Format("No asteroid close approaches for {0} detected in this time range.", BodyLookup.BodyDict[body]));
                 }
             }
         },
