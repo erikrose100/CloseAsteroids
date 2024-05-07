@@ -8,16 +8,9 @@ class Program
 {
     private static HttpClient sharedClient = new()
     {
-        BaseAddress = new Uri($"https://ssd-api.jpl.nasa.gov/cad.api"),
+        BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/cad.api"),
     };
 
-    // public List<Asteroid> GetAsteroids(List<List<string>> list)
-    // {
-    //     return new List<Asteroid>
-    //     {
-
-    //     };
-    // }
     static async Task Main(string[] args)
     {
         //1900-01-01
@@ -26,7 +19,6 @@ class Program
         var dateMax = DateTime.Parse(args[1]).ToString("yyyy-MM-dd");
         //0.2
         var distMax = args[2];
-        var body = args[3];
         var response = await sharedClient.GetAsync($"?date-min={dateMin}&date-max={dateMax}&dist-max={distMax}");
         var jsonResponse = await response.Content.ReadAsStringAsync();
 
@@ -52,8 +44,12 @@ class Program
             foreach (Asteroid asteroid in asteroids)
             {
                 var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
-                Console.WriteLine(output);               
+                Console.WriteLine(output);
             }
+        }
+        else
+        {
+            Console.WriteLine("No NEO close approaches detected in this time range.");
         }
 
     }
