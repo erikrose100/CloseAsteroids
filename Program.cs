@@ -8,7 +8,7 @@ class Program
 {
     private static HttpClient sharedClient = new()
     {
-        BaseAddress = new Uri($"https://ssd-api.jpl.nasa.gov/cad.api"),
+        BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/cad.api"),
     };
 
     static async Task Main(string[] args)
