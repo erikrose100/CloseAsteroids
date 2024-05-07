@@ -44,10 +44,10 @@ class Program
             foreach (Asteroid asteroid in asteroids)
             {
                 var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
-                Console.WriteLine(output);               
+                Console.WriteLine(output);
             }
         }
-        else 
+        else
         {
             Console.WriteLine("No NEO close approaches detected in this time range.");
         }
