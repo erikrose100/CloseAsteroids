@@ -26,7 +26,6 @@ class Program
         var dateMax = DateTime.Parse(args[1]).ToString("yyyy-MM-dd");
         //0.2
         var distMax = args[2];
-        var body = args[3];
         var response = await sharedClient.GetAsync($"?date-min={dateMin}&date-max={dateMax}&dist-max={distMax}");
         var jsonResponse = await response.Content.ReadAsStringAsync();
 
