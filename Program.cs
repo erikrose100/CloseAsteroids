@@ -14,20 +14,6 @@ class Program
 
     static async Task Main(string[] args)
     {
-        // var fileOption = new Option<FileInfo?>(
-        //     name: "--file",
-        //     description: "The file to read and display on the console.");
-
-        // var delayOption = new Option<int>(
-        //     name: "--delay",
-        //     description: "Delay between lines, specified as milliseconds per character in a line.",
-        //     getDefaultValue: () => 42);
-
-        // var fgcolorOption = new Option<ConsoleColor>(
-        //     name: "--fgcolor",
-        //     description: "Foreground color of text displayed on the console.",
-        //     getDefaultValue: () => ConsoleColor.White);
-
         var dateMin = new Option<DateTime>(
             name: "--date-min",
             description: "Minimum date to return close approaches for (start date).",
@@ -43,25 +29,24 @@ class Program
             description: "Maximum distance of return close approaches to return.",
             getDefaultValue: () => "0.2");
 
+        var body = new Option<string>(
+            name: "--body",
+            description: "Maximum distance of return close approaches to return.",
+            getDefaultValue: () => "Earth");
+
         var rootCommand = new RootCommand("CLI app that returns close approaches of asteroids for a given date range.")
         {
+            body,
             dateMin,
             dateMax,
             distMax
         };
 
-        // //1900-01-01
-        // var dateMin = DateTime.Parse(args[0]).ToString("yyyy-MM-dd");
-        // //2100-01-01
-        // var dateMax = DateTime.Parse(args[1]).ToString("yyyy-MM-dd");
-        // //0.2
-        // var distMax = args[2];
-
-        rootCommand.SetHandler(async (dateMin, dateMax, distMax) =>
+        rootCommand.SetHandler(async (body, dateMin, dateMax, distMax) =>
         {
             var dateMinString = dateMin.ToString("yyyy-MM-dd");
             var dateMaxString = dateMax.ToString("yyyy-MM-dd");
-            var response = await sharedClient.GetAsync($"?date-min={dateMinString}&date-max={dateMaxString}&dist-max={distMax}");
+            var response = await sharedClient.GetAsync($"?date-min={dateMinString}&date-max={dateMaxString}&dist-max={distMax}&body={body}");
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
             var json = JsonSerializer.Deserialize<CloseApproachDataResponse>(jsonResponse);
@@ -86,15 +71,23 @@ class Program
                 foreach (Asteroid asteroid in asteroids)
                 {
                     var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
-                    Console.WriteLine(output);
+                    var bodyOutput = body != "Earth" ? output + string.Format("Body: {0}\n\t", BodyLookup.BodyDict[body]) : output;
+                    Console.WriteLine(bodyOutput);
                 }
             }
             else
             {
-                Console.WriteLine("No NEO close approaches detected in this time range.");
+                if (body == "Earth")
+                {
+                    Console.WriteLine("No NEO close approaches detected in this time range.");
+                }
+                else
+                {
+                    Console.WriteLine(string.Format("No asteroid close approaches for detected in this time range.", BodyLookup.BodyDict[body]));
+                }
             }
         },
-        dateMin, dateMax, distMax);
+        body, dateMin, dateMax, distMax);
 
         await rootCommand.InvokeAsync(args);
     }
