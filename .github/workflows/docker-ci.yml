@@ -1,0 +1,36 @@
+name: docker-ci
+
+on:
+  push:
+    branches-ignore:
+      - "main"
+
+env:
+  TEST_TAG: user/app:test
+  LATEST_TAG: user/app:latest
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build and export to local images
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{defaultContext}}:MediaFileMetadataCheckerAPI"
+          load: true
+          tags: ${{ env.TEST_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Run Trivy scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.TEST_TAG }}
+          scan-type: image
+          hide-progress: true
+      - name: Test running image
+        run: |
+            docker run -e ASTEROIDARGS="--date-min=2099-12-25 --date-max=2100-01-01 --dist-max=0.2 --body=Venus" -it close-asteroids
