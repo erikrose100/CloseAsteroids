@@ -1,16 +1,24 @@
 ﻿using System.CommandLine;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using System.Xml;
 
 namespace CloseAsteroids;
 
-class Program
+public static partial class Program
 {
     private static HttpClient sharedClient = new()
     {
         BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/cad.api"),
     };
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(CloseApproachDataResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal partial class SourceGenerationContext : JsonSerializerContext
+    {
+    }
 
     static async Task Main(string[] args)
     {
@@ -50,7 +58,7 @@ class Program
             var response = await sharedClient.GetAsync($"?date-min={dateMinString}&date-max={dateMaxString}&dist-max={distMax}&body={bodyString}");
             var jsonResponse = await response.Content.ReadAsStringAsync();
 
-            var json = JsonSerializer.Deserialize<CloseApproachDataResponse>(jsonResponse);
+            var json = JsonSerializer.Deserialize<CloseApproachDataResponse>(jsonResponse, SourceGenerationContext.Default.CloseApproachDataResponse);
             var asteroids = json?.data?
                 .ConvertAll(x => new Asteroid
                 {
