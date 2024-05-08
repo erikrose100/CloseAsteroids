@@ -17,6 +17,7 @@ COPY --from=busybox /bin/sh /bin/sh
 WORKDIR /app
 COPY --from=build /app .
 ENV ASTEROIDARGS="--date-min=2099-12-25 --date-max=2100-01-01 --dist-max=0.2 --body=Mercury"
+USER $APP_UID
 # use sh entrypoint instead of exec form because exec form cannot expand ENV args
 SHELL ["/bin/sh", "-c"]
 ENTRYPOINT /app/CloseAsteroids $ASTEROIDARGS
