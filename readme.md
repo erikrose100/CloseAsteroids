@@ -59,6 +59,9 @@ Date: Thursday, December 31, 2099
         Body: Mercury
 ```
 ## Running in Docker
+> [!NOTE]  
+`dotnet publish` is setup in the Dockerfile to AOT compile the app for linux_x64 so your host will need to be compatible with this. If you're on ARM you either need to [setup your environment for cross-compilation](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/cross-compile) or change `dotnet publish -r linux-x64` to `dotnet publish -r linux-arm64`.
+
 You can build and run the image defined in this repo's Dockerfile by running the following:
 
 ```sh
