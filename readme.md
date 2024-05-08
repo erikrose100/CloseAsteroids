@@ -1,4 +1,5 @@
 # CloseAsteroids C# Console App
+AOT compiled C# Console app. Chiseled ubuntu Dockerfile with minimal dependencies provided for optional containerization.
 
 Uses NASA's [SBDB Close-Approach Data API](https://ssd-api.jpl.nasa.gov/doc/cad.html) to return a list of asteroids and comets that have made NEO close-approaches within a given distance and time range:
 
@@ -56,4 +57,16 @@ Date: Thursday, December 31, 2099
         Time: 15:13
         Distance: 0.06283979
         Body: Mercury
+```
+## Running in Docker
+You can build and run the image defined in this repo's Dockerfile by running the following:
+
+```sh
+docker build -t close-asteroids -f Dockerfile .
+docker run -it close-asteroids
+```
+
+You can pass arguments using the ASTEROIDARGS env variable like so:
+```sh
+docker run -e ASTEROIDARGS="--date-min=2099-12-25 --date-max=2100-01-01 --dist-max=0.2 --body=Venus" -it close-asteroids
 ```
