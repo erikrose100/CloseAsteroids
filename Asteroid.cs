@@ -17,6 +17,12 @@ public class Asteroid
     public float? AbsoluteMagnitude { get; set; }
 }
 
+public class ReturnAsteroids
+{
+    public DateTime Timestamp { get; set; }
+    public List<Asteroid>? Asteroids { get; set; }
+}
+
 public class Signature
 {
     public string? source { get; set; }
