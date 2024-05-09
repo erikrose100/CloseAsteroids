@@ -76,7 +76,6 @@ jobs:
           run: zip -r linux-x64.zip ~/app/
         - name: Download All Artifacts
           uses: actions/download-artifact@v4
-        # /home/runner/work/CloseAsteroids/CloseAsteroids/macos-x64.zip
         - name: Move artifacts to root
           run: |
             mv ~/work/CloseAsteroids/CloseAsteroids/macos-x64.zip macos-x64.zip \
