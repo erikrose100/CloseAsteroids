@@ -77,7 +77,7 @@ jobs:
         - name: Download All Artifacts
           uses: actions/download-artifact@v4
         - name: Move artifacts to root
-          run: mv -r ~/work/CloseAsteroids/CloseAsteroids/* ./
+          run: mv ~/work/CloseAsteroids/CloseAsteroids/* ./
         - name: Release
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
