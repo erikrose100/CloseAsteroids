@@ -1,0 +1,33 @@
+name: dotnet package
+
+on: [push]
+
+env:
+  dotnet-version: '8.0.x'
+
+jobs:
+  linux-x64:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v4
+        - name: Setup dotnet
+          uses: actions/setup-dotnet@v3
+          with:
+            dotnet-version: ${{ env.dotnet-version }}
+        - name: Install project dependencies
+          run: dotnet restore
+        - name: Install dotnet AOT dependencies
+          run: |
+            apt-get update \
+            && apt-get install -y --no-install-recommends \
+            clang zlib1g-dev
+        - name: Compile exectuable
+          run: dotnet publish -r linux-x64 -c Release -o /app/linux-x64/ CloseAsteroids.csproj
+        - name: Release
+          uses: softprops/action-gh-release@v2
+          if: startsWith(github.ref, 'refs/tags/')
+          with:
+            name: v1.0.0
+            files: |
+              /app/linux-x64/CloseAsteroids
+        
