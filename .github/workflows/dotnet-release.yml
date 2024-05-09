@@ -34,5 +34,5 @@ jobs:
             name: ${{ github.ref_name }}
             token: ${{ secrets.RELEASE_TOKEN }}
             files: |
-              /app/*
+              /app/linux-x64/CloseAsteroids
         
