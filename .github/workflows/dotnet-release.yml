@@ -84,7 +84,7 @@ jobs:
             token: ${{ secrets.RELEASE_TOKEN }}
             generate_release_notes: true
             files: |
-              windows-x64.zip
+              win-x64.zip
               macos-x64.zip
               linux-x64.zip
         - name: Delete artifacts
@@ -92,5 +92,5 @@ jobs:
           if: always()
           with:
             name: |
-              windows-x64
+              win-x64
               macos-x64
