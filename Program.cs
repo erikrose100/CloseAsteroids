@@ -25,22 +25,34 @@ public static partial class Program
         var dateMin = new Option<DateTime>(
             name: "--date-min",
             description: "Minimum date to return close approaches for (start date).",
-            getDefaultValue: () => DateTime.UtcNow);
+            getDefaultValue: () => DateTime.UtcNow)
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };;
 
         var dateMax = new Option<DateTime>(
             name: "--date-max",
             description: "Maximum date to return close approaches for (end date).",
-            getDefaultValue: () => DateTime.UtcNow.AddDays(30));
+            getDefaultValue: () => DateTime.UtcNow.AddDays(30))
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };;
 
         var distMax = new Option<string>(
             name: "--dist-max",
             description: "Maximum distance of return close approaches to return.",
-            getDefaultValue: () => "0.2");
+            getDefaultValue: () => "0.2")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };;
 
         var body = new Option<string>(
             name: "--body",
             description: "Maximum distance of return close approaches to return.",
-            getDefaultValue: () => "Earth");
+            getDefaultValue: () => "Earth")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };
 
         var rootCommand = new RootCommand("CLI app that returns close approaches of asteroids for a given date range.")
         {
