@@ -11,7 +11,7 @@ jobs:
     steps:
         - uses: actions/checkout@v4
         - name: Setup dotnet
-          uses: actions/setup-dotnet@v3
+          uses: actions/setup-dotnet@v4
           with:
             dotnet-version: ${{ env.dotnet-version }}
         - name: Install project dependencies
@@ -21,7 +21,7 @@ jobs:
             sudo apt-get update \
             && sudo apt-get install -y --no-install-recommends \
             clang zlib1g-dev
-        - run: mkdir /app && mkdir /app/linux-x64
+        - run: sudo mkdir /app && sudo mkdir /app/linux-x64
         - name: Compile exectuable
           run: sudo dotnet publish -r linux-x64 -c Release -o /app/linux-x64/ CloseAsteroids.csproj
         - name: Release
