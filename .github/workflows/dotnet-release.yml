@@ -79,8 +79,8 @@ jobs:
         # /home/runner/work/CloseAsteroids/CloseAsteroids/macos-x64.zip
         - name: Move artifacts to root
           run: |
-            mv ~/runner/work/CloseAsteroids/CloseAsteroids/macos-x64.zip macos-x64.zip \
-            && mv ~/runner/work/CloseAsteroids/CloseAsteroids/win-x64.zip win-x64.zip
+            mv ~/work/CloseAsteroids/CloseAsteroids/macos-x64.zip macos-x64.zip \
+            && mv ~/work/CloseAsteroids/CloseAsteroids/win-x64.zip win-x64.zip
         - name: Release
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
