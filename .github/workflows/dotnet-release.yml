@@ -72,7 +72,7 @@ jobs:
         - name: Compile exectuable
           run: sudo dotnet publish -r linux-x64 -c Release -o /app/ CloseAsteroids.csproj
         - name: Zip executable
-          run: zip -r linux-x64.zip ./app/*
+          run: zip -r linux-x64.zip . -i ./app/*
         - name: Download All Artifacts
           uses: actions/download-artifact@v4
         - name: Release
