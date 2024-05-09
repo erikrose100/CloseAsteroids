@@ -14,9 +14,39 @@ public static partial class Program
         BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/cad.api"),
     };
 
+    static void ConsoleOutput(List<Asteroid> asteroids, string body)
+    {
+        if (asteroids is not null)
+        {
+            foreach (Asteroid asteroid in asteroids)
+            {
+                var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
+                var bodyOutput = body != "Earth" ? output + string.Format("Body: {0}\n\t", body) : output;
+                Console.WriteLine(bodyOutput);
+            }
+        }
+        else
+        {
+            if (body == "Earth")
+            {
+                Console.WriteLine("No NEO close approaches detected in this time range.");
+            }
+            else
+            {
+                Console.WriteLine(string.Format("No asteroid close approaches for {0} detected in this time range.", body));
+            }
+        }
+    }
+
     [JsonSourceGenerationOptions(WriteIndented = true)]
     [JsonSerializable(typeof(CloseApproachDataResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
     internal partial class SourceGenerationContext : JsonSerializerContext
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ReturnAsteroids), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal partial class SourceGenerationContextSerializer : JsonSerializerContext
     {
     }
 
@@ -26,43 +56,55 @@ public static partial class Program
             name: "--date-min",
             description: "Minimum date to return close approaches for (start date).",
             getDefaultValue: () => DateTime.UtcNow)
-            {
-                Arity = ArgumentArity.ExactlyOne
-            };;
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
 
         var dateMax = new Option<DateTime>(
             name: "--date-max",
             description: "Maximum date to return close approaches for (end date).",
             getDefaultValue: () => DateTime.UtcNow.AddDays(30))
-            {
-                Arity = ArgumentArity.ExactlyOne
-            };;
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
 
         var distMax = new Option<string>(
             name: "--dist-max",
             description: "Maximum distance of return close approaches to return.",
             getDefaultValue: () => "0.2")
-            {
-                Arity = ArgumentArity.ExactlyOne
-            };;
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
 
         var body = new Option<string>(
             name: "--body",
             description: "Maximum distance of return close approaches to return.",
             getDefaultValue: () => "Earth")
-            {
-                Arity = ArgumentArity.ExactlyOne
-            };
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
+
+        body.AddAlias("-b");
+
+        var output = new Option<string>(
+            name: "--output",
+            description: "Enables file output to working dir and sets output file type.")
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
+
+        output.AddAlias("-o");
 
         var rootCommand = new RootCommand("CLI app that returns close approaches of asteroids for a given date range.")
         {
+            output,
             body,
             dateMin,
             dateMax,
             distMax
         };
 
-        rootCommand.SetHandler(async (body, dateMin, dateMax, distMax) =>
+        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax) =>
         {
             var dateMinString = dateMin.ToString("yyyy-MM-dd");
             var dateMaxString = dateMax.ToString("yyyy-MM-dd");
@@ -87,28 +129,24 @@ public static partial class Program
                     AbsoluteMagnitude = x[10] != null ? Single.Parse(x[10]) : null
                 });
 
-            if (asteroids is not null)
+            switch (output)
             {
-                foreach (Asteroid asteroid in asteroids)
-                {
-                    var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
-                    var bodyOutput = body != "Earth" ? output + string.Format("Body: {0}\n\t", body) : output;
-                    Console.WriteLine(bodyOutput);
-                }
-            }
-            else
-            {
-                if (body == "Earth")
-                {
-                    Console.WriteLine("No NEO close approaches detected in this time range.");
-                }
-                else
-                {
-                    Console.WriteLine(string.Format("No asteroid close approaches for {0} detected in this time range.", body));
-                }
+                case "json":
+                    var asteroidOutput = new ReturnAsteroids
+                    {
+                        Timestamp = DateTime.Now,
+                        Asteroids = asteroids
+                    };
+                    var jsonString = JsonSerializer.Serialize(asteroidOutput!, SourceGenerationContextSerializer.Default.ReturnAsteroids);
+                    Console.WriteLine(jsonString);
+                    break;
+
+                default:
+                    ConsoleOutput(asteroids!, body);
+                    break;
             }
         },
-        body, dateMin, dateMax, distMax);
+        output, body, dateMin, dateMax, distMax);
 
         await rootCommand.InvokeAsync(args);
     }

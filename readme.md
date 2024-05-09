@@ -1,11 +1,20 @@
 # CloseAsteroids C# Console App
 AOT compiled C# Console app. Chiseled ubuntu Dockerfile with minimal dependencies provided for optional containerization.
 
-Uses NASA's [SBDB Close-Approach Data API](https://ssd-api.jpl.nasa.gov/doc/cad.html) to return a list of asteroids and comets that have made NEO close-approaches within a given distance and time range:
+Uses NASA's [SBDB Close-Approach Data API](https://ssd-api.jpl.nasa.gov/doc/cad.html) to return a list of asteroids and comets that have made NEO close-approaches within a given distance and time range.
+
+Example usage (ran from the root dir of this repo):
 
 ```sh
 dotnet run --date-min <start-date> --date-max <end-date> --dist-max <distance(au)>
 dotnet run --date-min 2099-01-01 --date-max 2100-01-01 --dist-max 0.2
+```
+
+You can also call the binary directly:
+```sh
+./CloseAsteroids --date-min 2063-05-12 --date-max 2065-02-03 --dist-max 0.3
+# after adding to your PATH
+CloseAsteroids --date-min 2063-05-12 --date-max 2065-02-03 --dist-max 0.3
 ```
 
 By default returns asteroid / comet close approaches for Earth but can specify other bodies using the `body` option:
@@ -58,6 +67,45 @@ Date: Thursday, December 31, 2099
         Distance: 0.06283979
         Body: Mercury
 ```
+## Output Options
+You can use the `--output=json` option to output json to stdout:
+```sh
+dotnet run --output=json
+CloseAsteroids -o=json
+```
+Example output:
+```json
+{
+  "Timestamp": "2024-05-09T03:13:18.0804695+00:00",
+  "Asteroids": [
+    {
+      "AsteroidDesignation": "410777",
+      "OrbitID": "107",
+      "JDTime": 2488063.083053552,
+      "CloseApproachTime": "2099-12-25T14:00:00",
+      "ApproachDistance": 0.1498545,
+      "DistMin": 0.1495639,
+      "DistMax": 0.15014513,
+      "VRel": 21.763435,
+      "VInf": 21.76277,
+      "TSigUncertainty": "00:21",
+      "AbsoluteMagnitude": 22.18
+    },
+    {
+      "AsteroidDesignation": "620089",
+      "OrbitID": "21",
+      "JDTime": 2488064.309669096,
+      "CloseApproachTime": "2099-12-26T19:26:00",
+      "ApproachDistance": 0.07969794,
+      "DistMin": 0.07968595,
+      "DistMax": 0.079709955,
+      "VRel": 34.890934,
+      "VInf": 34.890156,
+      "TSigUncertainty": "00:02",
+      "AbsoluteMagnitude": 19.43
+    }, [...]
+```
+
 ## Running in Docker
 > [!NOTE]  
 `dotnet publish` is setup in the Dockerfile to AOT compile the app for linux_x64 so your host will need to be compatible with this. If you're on ARM you either need to [setup your environment for cross-compilation](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/cross-compile) or change `dotnet publish -r linux-x64` to `dotnet publish -r linux-arm64`.
