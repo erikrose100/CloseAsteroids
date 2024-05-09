@@ -4,6 +4,9 @@ on:
   push:
     branches-ignore:
       - "main"
+    paths:
+      - '**.cs'
+      - 'Dockerfile'
 
 env:
   TEST_TAG: user/app:test
