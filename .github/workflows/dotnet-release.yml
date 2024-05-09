@@ -21,8 +21,9 @@ jobs:
             sudo apt-get update \
             && sudo apt-get install -y --no-install-recommends \
             clang zlib1g-dev
+        - run: mkdir /app/linux-x64/
         - name: Compile exectuable
-          run: dotnet publish -r linux-x64 -c Release -o /app/linux-x64/ CloseAsteroids.csproj
+          run: sudo dotnet publish -r linux-x64 -c Release -o /app/linux-x64/ CloseAsteroids.csproj
         - name: Release
           uses: softprops/action-gh-release@v2
           if: startsWith(github.ref, 'refs/tags/')
