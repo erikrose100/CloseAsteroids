@@ -18,8 +18,8 @@ jobs:
           run: dotnet restore
         - name: Install dotnet AOT dependencies
           run: |
-            apt-get update \
-            && apt-get install -y --no-install-recommends \
+            sudo apt-get update \
+            && sudo apt-get install -y --no-install-recommends \
             clang zlib1g-dev
         - name: Compile exectuable
           run: dotnet publish -r linux-x64 -c Release -o /app/linux-x64/ CloseAsteroids.csproj
