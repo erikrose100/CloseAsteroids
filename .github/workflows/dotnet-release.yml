@@ -9,7 +9,7 @@ env:
   dotnet-version: '8.0.x'
 
 jobs:
-  windows-x64-release:
+  win-x64-release:
     runs-on: windows-latest
     steps:
         - uses: actions/checkout@v4
@@ -21,15 +21,15 @@ jobs:
           run: dotnet restore
         - run: mkdir \app
         - name: Compile exectuable
-          run: dotnet publish -r windows-x64 -c Release -o \app\ CloseAsteroids.csproj
+          run: dotnet publish -r win-x64 -c Release -o \app\ CloseAsteroids.csproj
         - name: Zip executable
           shell: Powershell
-          run: Compress-Archive -Path app\* -Destination windows-x64.zip
+          run: Compress-Archive -Path app\* -Destination win-x64.zip
         - name: Upload windows zip artifact
           uses: actions/upload-artifact@v4
           with:
-            name: windows-x64
-            path: windows-x64.zip
+            name: win-x64
+            path: win-x64.zip
 
   macos-x64-release:
     runs-on: macos-latest
@@ -41,9 +41,9 @@ jobs:
             dotnet-version: ${{ env.dotnet-version }}
         - name: Install project dependencies
           run: dotnet restore
-        - run: mkdir /app
+        - run: sudo mkdir /app
         - name: Compile exectuable
-          run: dotnet publish -r macos-x64 -c Release -o /app/ CloseAsteroids.csproj
+          run: sudo dotnet publish -r osx-x64 -c Release -o /app/ CloseAsteroids.csproj
         - name: Zip executable
           shell: Powershell
           run: Compress-Archive -Path app/* -Destination macos-x64.zip
@@ -70,7 +70,7 @@ jobs:
             clang zlib1g-dev
         - run: sudo mkdir /app
         - name: Compile exectuable
-          run: dotnet publish -r linux-x64 -c Release -o /app/ CloseAsteroids.csproj
+          run: sudo dotnet publish -r linux-x64 -c Release -o /app/ CloseAsteroids.csproj
         - name: Zip executable
           shell: Powershell
           run: Compress-Archive -Path app/* -Destination linux-x64.zip
