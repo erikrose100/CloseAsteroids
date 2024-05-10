@@ -114,10 +114,17 @@ You can build and run the image defined in this repo's Dockerfile by running the
 
 ```sh
 docker build -t close-asteroids -f Dockerfile .
-docker run -it close-asteroids
+docker run close-asteroids
 ```
 
 You can pass arguments using the ASTEROIDARGS env variable like so:
 ```sh
-docker run -e ASTEROIDARGS="--date-min=2099-12-25 --date-max=2100-01-01 --dist-max=0.2 --body=Venus" -it close-asteroids
+docker run -e ASTEROIDARGS="--date-min=2099-12-25 --date-max=2100-01-01 --dist-max=0.2 --body=Venus" close-asteroids
+```
+
+If you'd like to use the Alpine-based container, build and run the image like so:
+
+```sh
+docker build -t close-asteroids-alpine -f Dockerfile.Alpine .
+docker run close-asteroids-alpine
 ```
