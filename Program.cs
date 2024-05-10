@@ -1,9 +1,7 @@
 ﻿using System.CommandLine;
-using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
-using System.Xml;
 
 namespace CloseAsteroids;
 
@@ -16,18 +14,9 @@ public static partial class Program
 
     static void ConsoleOutput(List<Asteroid> asteroids, string body)
     {
-        if (asteroids is not null)
+        if (asteroids is null || !asteroids.Any())
         {
-            foreach (Asteroid asteroid in asteroids)
-            {
-                var output = string.Format("Date: {0}\n\tAsteroid: {1}\n\tTime: {2}\n\tDistance: {3}\n\t", asteroid.CloseApproachTime?.ToString("D"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance);
-                var bodyOutput = body != "Earth" ? output + string.Format("Body: {0}\n\t", body) : output;
-                Console.WriteLine(bodyOutput);
-            }
-        }
-        else
-        {
-            if (body == "Earth")
+            if (string.Equals(body, "Earth"))
             {
                 Console.WriteLine("No NEO close approaches detected in this time range.");
             }
@@ -35,7 +24,20 @@ public static partial class Program
             {
                 Console.WriteLine(string.Format("No asteroid close approaches for {0} detected in this time range.", body));
             }
+            return;
         }
+
+        var output = new StringBuilder();
+        foreach (Asteroid asteroid in asteroids)
+        {
+            output.AppendFormat("Date: {0}\n\t", asteroid.CloseApproachTime?.ToString("D"));
+            output.AppendFormat("Asteroid: {0}\n\t", asteroid.AsteroidDesignation);
+            output.AppendFormat("Time: {0}\n\t", asteroid.CloseApproachTime?.ToString("HH:mm"));
+            output.AppendFormat("Distance: {0}\n", asteroid.ApproachDistance);
+            if (!string.Equals(body, "Earth")) { output.AppendFormat("\tBody: {0}\n", body); }
+            output.Append("\n");
+        }
+        Console.WriteLine(output.ToString().TrimEnd());
     }
 
     [JsonSourceGenerationOptions(WriteIndented = true)]
