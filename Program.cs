@@ -35,7 +35,7 @@ public static partial class Program
             output.AppendFormat("Time: {0}\n\t", asteroid.CloseApproachTime?.ToString("HH:mm"));
             output.AppendFormat("Distance: {0}\n", asteroid.ApproachDistance);
             if (!string.Equals(body, "Earth")) { output.AppendFormat("\tBody: {0}\n", body); }
-            output.Append("\n");
+            output.Append('\n');
         }
         Console.WriteLine(output.ToString().TrimEnd());
     }
