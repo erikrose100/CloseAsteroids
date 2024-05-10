@@ -1,5 +1,5 @@
 # CloseAsteroids C# Console App
-AOT compiled C# Console app. Chiseled ubuntu Dockerfile with minimal dependencies provided for optional containerization.
+AOT compiled C# Console app. Chiseled Ubuntu and Alpine Dockerfiles with minimal dependencies provided for optional containerization.
 
 Uses NASA's [SBDB Close-Approach Data API](https://ssd-api.jpl.nasa.gov/doc/cad.html) to return a list of asteroids and comets that have made NEO close-approaches within a given distance and time range.
 
