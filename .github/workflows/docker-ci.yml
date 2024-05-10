@@ -11,8 +11,8 @@ on:
       - 'Dockerfile.Alpine'
 
 env:
-  ALPINE_TAG: erikrose100/CloseAsteroids:alpine
-  LATEST_TAG: erikrose100/CloseAsteroids
+  ALPINE_TAG: erikrose100/closeasteroids:alpine
+  LATEST_TAG: erikrose100/closeasteroids
 
 jobs:
   docker-latest:
