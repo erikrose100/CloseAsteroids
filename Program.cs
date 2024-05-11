@@ -143,6 +143,16 @@ public static partial class Program
                     Console.WriteLine(jsonString);
                     break;
 
+                case "table":
+                    var tableOutput = new StringBuilder();
+                    tableOutput.AppendFormat("Date{0}Asteroid{0}Time{0}Distance{0}Body\n", delimiter);
+                    foreach (Asteroid asteroid in asteroids!) 
+                    {
+                        tableOutput.AppendFormat("{1}{0}{2}{0}{3}{0}{4}{0}{5}\n", delimiter, asteroid.CloseApproachTime?.ToString("s"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"),  asteroid.ApproachDistance, body.Trim());   
+                    }
+                    Console.WriteLine(tableOutput.ToString().TrimEnd());
+                    break;
+
                 default:
                     ConsoleOutput(asteroids!, body);
                     break;
