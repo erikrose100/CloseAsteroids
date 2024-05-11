@@ -68,6 +68,7 @@ Date: Thursday, December 31, 2099
         Body: Mercury
 ```
 ## Output Options
+### json
 You can use the `--output=json` option to output json to stdout:
 ```sh
 dotnet run --output=json
@@ -104,6 +105,35 @@ Example output:
       "TSigUncertainty": "00:02",
       "AbsoluteMagnitude": 19.43
     }, [...]
+```
+
+### table
+You can use the `--output=table` option to output json to stdout:
+```sh
+dotnet run --output=table
+CloseAsteroids -o table
+```
+Example output:
+```
+Date,Asteroid,Time,Distance,Body
+2099-12-25T14:00:00,410777,14:00,0.1498545,Venus
+2099-12-26T19:26:00,620089,19:26,0.07969794,Venus
+2099-12-27T11:17:00,2023 BM4,11:17,0.06353373,Venus
+2099-12-27T13:49:00,154658,13:49,0.12515673,Venus
+2099-12-29T04:08:00,2015 NU13,04:08,0.06993372,Venus
+2099-12-29T04:10:00,2016 EE157,04:10,0.110200495,Venus
+2099-12-29T17:09:00,468910,17:09,0.076191306,Venus
+2099-12-29T20:32:00,2017 EN,20:32,0.08239899,Venus
+2099-12-31T05:30:00,2016 BC14,05:30,0.1080818,Venus
+```
+You can change the delimiter using the `--delimiter` option:
+```sh
+CloseAsteroids --date-min=2099-12-25 --date-max=2100-01-01 --dist-max=0.2 --body=Mars --output=table --delimiter="/"
+```
+```
+Date/Asteroid/Time/Distance/Body
+2099-12-25T09:08:00/612267/09:08/0.023517134/Mars
+2099-12-29T09:28:00/2006 WE129/09:28/0.088202335/Mars
 ```
 
 ## Running in Docker
