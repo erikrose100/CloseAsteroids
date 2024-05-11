@@ -108,7 +108,7 @@ Example output:
 ```
 
 ### table
-You can use the `--output=table` option to output json to stdout:
+You can use the `--output=table` option to output a delimited-separated table to stdout:
 ```sh
 dotnet run --output=table
 CloseAsteroids -o table
