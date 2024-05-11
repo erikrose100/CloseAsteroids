@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -90,12 +90,20 @@ public static partial class Program
 
         var output = new Option<string>(
             name: "--output",
-            description: "Enables file output to working dir and sets output file type.")
+            description: "Sets serialization type for stdout.")
         {
             Arity = ArgumentArity.ExactlyOne
         };
 
         output.AddAlias("-o");
+
+        var delimiter = new Option<string>(
+            name: "--delimiter",
+            description: "What delimiter string to use for table output.",
+            getDefaultValue: () => ",")
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
 
         var rootCommand = new RootCommand("CLI app that returns close approaches of asteroids for a given date range.")
         {
@@ -103,10 +111,11 @@ public static partial class Program
             body,
             dateMin,
             dateMax,
-            distMax
+            distMax,
+            delimiter
         };
 
-        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax) =>
+        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax, delimiter) =>
         {
             var dateMinString = dateMin.ToString("yyyy-MM-dd");
             var dateMaxString = dateMax.ToString("yyyy-MM-dd");
@@ -142,13 +151,23 @@ public static partial class Program
                     var jsonString = JsonSerializer.Serialize(asteroidOutput!, SourceGenerationContextSerializer.Default.ReturnAsteroids);
                     Console.WriteLine(jsonString);
                     break;
+                
+                case "table":
+                    var tableOutput = new StringBuilder();
+                    tableOutput.AppendFormat("Date{0}Asteroid{0}Time{0}Distance{0}Body\n", delimiter);
+                    foreach (Asteroid asteroid in asteroids!) 
+                    {
+                        tableOutput.AppendFormat("{1}{0}{2}{0}{3}{0}{4}{0}{5}\n", delimiter, asteroid.CloseApproachTime?.ToString("s"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"),  asteroid.ApproachDistance, body.Trim());   
+                    }
+                    Console.WriteLine(tableOutput.ToString().TrimEnd());
+                    break;
 
                 default:
                     ConsoleOutput(asteroids!, body);
                     break;
             }
         },
-        output, body, dateMin, dateMax, distMax);
+        output, body, dateMin, dateMax, distMax, delimiter);
 
         await rootCommand.InvokeAsync(args);
     }
