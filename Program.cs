@@ -1,4 +1,4 @@
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,9 +12,14 @@ public static partial class Program
         BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/cad.api"),
     };
 
+    private static HttpClient smallBodyClient = new()
+    {
+        BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/sbdb.api")
+    };
+
     static void ConsoleOutput(List<Asteroid> asteroids, string body)
     {
-        if (asteroids is null || !asteroids.Any())
+        if (asteroids is null || asteroids.Count == 0)
         {
             if (string.Equals(body, "Earth"))
             {
@@ -105,6 +110,13 @@ public static partial class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
+        var volume = new Option<string>(
+            name: "--volume-output",
+            description: "Show approximate volume of returned bodies.")
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
+
         var rootCommand = new RootCommand("CLI app that returns close approaches of asteroids for a given date range.")
         {
             output,
@@ -112,10 +124,11 @@ public static partial class Program
             dateMin,
             dateMax,
             distMax,
-            delimiter
+            delimiter,
+            volume
         };
 
-        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax, delimiter) =>
+        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax, delimiter, volume) =>
         {
             var dateMinString = dateMin.ToString("yyyy-MM-dd");
             var dateMaxString = dateMax.ToString("yyyy-MM-dd");
@@ -139,6 +152,14 @@ public static partial class Program
                     TSigUncertainty = x[9],
                     AbsoluteMagnitude = x[10] != null ? Single.Parse(x[10]) : null
                 });
+            
+            if (volume is not null && asteroids!.Count > 0)
+            {
+                foreach (Asteroid asteroid in asteroids!)
+                {
+                    var smallBodyREsponse = await smallBodyClient.GetAsync($"?sstr={asteroid.AsteroidDesignation}");
+                }
+            }
 
             switch (output)
             {
@@ -167,7 +188,7 @@ public static partial class Program
                     break;
             }
         },
-        output, body, dateMin, dateMax, distMax, delimiter);
+        output, body, dateMin, dateMax, distMax, delimiter, volume);
 
         await rootCommand.InvokeAsync(args);
     }

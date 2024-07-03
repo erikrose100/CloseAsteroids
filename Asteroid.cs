@@ -13,6 +13,7 @@ public class Asteroid
     public float? VInf { get; set; }
     public string? TSigUncertainty { get; set; }
     public float? AbsoluteMagnitude { get; set; }
+    public double? SemiMajorAxis { get; set; }
 }
 
 public class ReturnAsteroids
