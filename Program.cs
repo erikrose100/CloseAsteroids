@@ -172,11 +172,9 @@ public static partial class Program
                     var smallBodyReturn = await smallBodyClient.GetAsync($"?sstr={Uri.EscapeDataString(asteroid.AsteroidDesignation!)}");
                     var smallBodyJsonReturn = await smallBodyReturn.Content.ReadAsStringAsync();
                     var smallBody = JsonSerializer.Deserialize<SmallBodyResponse>(smallBodyJsonReturn, SourceGenerationContextSmall.Default.SmallBodyResponse);
-                    // var smallBodyOrbit = smallBody!.orbit!;
                     var smallBodyElements = smallBody!.orbit!.elements;
                     var semiMajorAxis = smallBodyElements.Where(x => x.title == "semi-major axis").Select(x => x.value).ToList();
                     asteroid.SemiMajorAxis = Double.Parse(semiMajorAxis.FirstOrDefault()!);
-                    Console.WriteLine(asteroid.SemiMajorAxis);
                 }
             }
 
