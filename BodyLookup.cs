@@ -15,4 +15,18 @@ public static class BodyLookup
             { "Pluto", "Pluto" },
             { "Moon", "Moon" }
         };
+
+    public static readonly Dictionary<string, double> PlanetsSemiMajorAxis = new()
+        {
+            { "Mercury", 0.39 },
+            { "Venus", 0.72 },
+            { "Earth", 1.00 },
+            { "Mars", 1.52 },
+            { "Jupiter", 5.20 },
+            { "Saturn", 9.54 },
+            { "Uranus", 19.19 },
+            { "Neptune", 30.06 },
+            { "Pluto", 39.5 },
+            { "Moon", 0 }
+        };
 }

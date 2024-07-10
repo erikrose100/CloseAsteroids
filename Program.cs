@@ -1,4 +1,4 @@
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,9 +12,34 @@ public static partial class Program
         BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/cad.api"),
     };
 
+    private static HttpClient smallBodyClient = new()
+    {
+        BaseAddress = new Uri("https://ssd-api.jpl.nasa.gov/sbdb.api"),
+    };
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(CloseApproachDataResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal partial class SourceGenerationContext : JsonSerializerContext
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ReturnAsteroids), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    internal partial class SourceGenerationContextSerializer : JsonSerializerContext
+    {
+    }
+
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(SmallBodyResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
+    [JsonSerializable(typeof(Orbit))]
+    [JsonSerializable(typeof(OrbitObject))]
+    internal partial class SourceGenerationContextSmall : JsonSerializerContext
+    {
+    }
+
     static void ConsoleOutput(List<Asteroid> asteroids, string body)
     {
-        if (asteroids is null || !asteroids.Any())
+        if (asteroids is null || asteroids.Count == 0)
         {
             if (string.Equals(body, "Earth"))
             {
@@ -34,22 +59,11 @@ public static partial class Program
             output.AppendFormat("Asteroid: {0}\n\t", asteroid.AsteroidDesignation);
             output.AppendFormat("Time: {0}\n\t", asteroid.CloseApproachTime?.ToString("HH:mm"));
             output.AppendFormat("Distance: {0}\n", asteroid.ApproachDistance);
-            if (!string.Equals(body, "Earth")) { output.AppendFormat("\tBody: {0}\n", body); }
+            if (asteroid.SemiMajorAxis > 0) { output.AppendFormat("\tSemi-Major Axis: {0} au\n", asteroid.SemiMajorAxis);}
+            if (!string.Equals(body, "Earth")) { output.AppendFormat("\tBody: {0}\n", body);}
             output.Append('\n');
         }
         Console.WriteLine(output.ToString().TrimEnd());
-    }
-
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(CloseApproachDataResponse), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal partial class SourceGenerationContext : JsonSerializerContext
-    {
-    }
-
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(ReturnAsteroids), GenerationMode = JsonSourceGenerationMode.Metadata)]
-    internal partial class SourceGenerationContextSerializer : JsonSerializerContext
-    {
     }
 
     static async Task Main(string[] args)
@@ -105,6 +119,16 @@ public static partial class Program
             Arity = ArgumentArity.ExactlyOne
         };
 
+        var volume = new Option<bool>(
+            name: "--volume-output",
+            description: "Show approximate volume of returned bodies.",
+            getDefaultValue: () => true)
+        {
+            Arity = ArgumentArity.ZeroOrOne
+        };
+
+        volume.AddAlias("-v");
+
         var rootCommand = new RootCommand("CLI app that returns close approaches of asteroids for a given date range.")
         {
             output,
@@ -112,10 +136,11 @@ public static partial class Program
             dateMin,
             dateMax,
             distMax,
-            delimiter
+            delimiter,
+            volume
         };
 
-        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax, delimiter) =>
+        rootCommand.SetHandler(async (output, body, dateMin, dateMax, distMax, delimiter, volume) =>
         {
             var dateMinString = dateMin.ToString("yyyy-MM-dd");
             var dateMaxString = dateMax.ToString("yyyy-MM-dd");
@@ -140,6 +165,19 @@ public static partial class Program
                     AbsoluteMagnitude = x[10] != null ? Single.Parse(x[10]) : null
                 });
 
+            if (volume == true && asteroids!.Count > 0)
+            {
+                foreach (Asteroid asteroid in asteroids)
+                {
+                    var smallBodyReturn = await smallBodyClient.GetAsync($"?sstr={Uri.EscapeDataString(asteroid.AsteroidDesignation!)}");
+                    var smallBodyJsonReturn = await smallBodyReturn.Content.ReadAsStringAsync();
+                    var smallBody = JsonSerializer.Deserialize<SmallBodyResponse>(smallBodyJsonReturn, SourceGenerationContextSmall.Default.SmallBodyResponse);
+                    var smallBodyElements = smallBody!.orbit!.elements;
+                    var semiMajorAxis = smallBodyElements.Where(x => x.title == "semi-major axis").Select(x => x.value).ToList();
+                    asteroid.SemiMajorAxis = Double.Parse(semiMajorAxis.FirstOrDefault()!);
+                }
+            }
+
             switch (output)
             {
                 case "json":
@@ -151,13 +189,13 @@ public static partial class Program
                     var jsonString = JsonSerializer.Serialize(asteroidOutput!, SourceGenerationContextSerializer.Default.ReturnAsteroids);
                     Console.WriteLine(jsonString);
                     break;
-                
+
                 case "table":
                     var tableOutput = new StringBuilder();
                     tableOutput.AppendFormat("Date{0}Asteroid{0}Time{0}Distance{0}Body\n", delimiter);
-                    foreach (Asteroid asteroid in asteroids!) 
+                    foreach (Asteroid asteroid in asteroids!)
                     {
-                        tableOutput.AppendFormat("{1}{0}{2}{0}{3}{0}{4}{0}{5}\n", delimiter, asteroid.CloseApproachTime?.ToString("s"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"),  asteroid.ApproachDistance, body.Trim());   
+                        tableOutput.AppendFormat("{1}{0}{2}{0}{3}{0}{4}{0}{5}\n", delimiter, asteroid.CloseApproachTime?.ToString("s"), asteroid.AsteroidDesignation, asteroid.CloseApproachTime?.ToString("HH:mm"), asteroid.ApproachDistance, body.Trim());
                     }
                     Console.WriteLine(tableOutput.ToString().TrimEnd());
                     break;
@@ -167,7 +205,7 @@ public static partial class Program
                     break;
             }
         },
-        output, body, dateMin, dateMax, distMax, delimiter);
+        output, body, dateMin, dateMax, distMax, delimiter, volume);
 
         await rootCommand.InvokeAsync(args);
     }
